@@ -104,14 +104,8 @@
 				"method": "PUT",
 				"header": [],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "note",
-							"value": "Оновлення даних нотатки для прикладу",
-							"type": "text"
-						}
-					]
+					"mode": "raw",
+					"raw": "Оновлення прикладу нотатки"
 				},
 				"url": {
 					"raw": "http://localhost:8000/notes/Приклад нотатки",

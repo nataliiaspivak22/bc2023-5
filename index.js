@@ -101,20 +101,27 @@ app.post('/upload', upload.single('note'), async (req, res) => {
   }
 });
 
-app.put('/notes/:note_name', upload.none(), async (req, res) => {
-    const note_name = req.params.note_name;
-    const updatedNoteText = req.body.note;
-  
-    if (!note_name || !note_name.trim()) {
-      return res.status(400).send('Будь ласка, введіть назву нотатки.');
-    }
-  
+app.put('/notes/:note_name', (req, res) => {
+  const note_name = req.params.note_name;
+  let requestBody = '';
+
+  req.on('data', chunk => {
+    requestBody += chunk.toString();
+  });
+
+  req.on('end', async () => {
     try {
+      const updatedNoteText = requestBody.trim();
+      
+      if (!note_name || !note_name.trim()) {
+        return res.status(400).send('Будь ласка, введіть назву нотатки.');
+      }
+      
       const data = await fs.readFile(notesFile, 'utf-8');
       let notes = JSON.parse(data) || [];
-  
+
       const noteToUpdate = notes.find((note) => note.note_name === note_name);
-  
+
       if (noteToUpdate) {
         noteToUpdate.note = updatedNoteText;
         await fs.writeFile(notesFile, JSON.stringify(notes));
@@ -127,6 +134,9 @@ app.put('/notes/:note_name', upload.none(), async (req, res) => {
       res.status(500).send('Внутрішня помилка сервера');
     }
   });
+});
+
+
   
 app.delete('/notes/:note_name', async (req, res) => {
   try {
